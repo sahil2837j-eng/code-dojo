@@ -4,103 +4,22 @@ A Chrome extension that applies **Duolingo's habit mechanics to learning to code
 streaks, XP, levels, leagues, daily quests, reminders — and it learns **when you
 usually code** from your real practice on the Odin Project.
 
-The rule it enforces: **a little practice every day beats a lot sometimes.**
+The rule it enforces: a little practice every day beats a lot sometimes.
+• v1.17: One focus surface. Small timer page removed; #focus on the big screen runs the session (start, pause, reset, live tab title). 20+ min gap voids a round; closed tabs return paused. Workers pay completed rounds. Suite: 73 checks (bash tests/run.sh).
+• v1.16: Popup redesigned in Dark Zen (slate canvas, translucent cards, hairline borders, bundled Inter, green hero button, gold rewards). No markup/behavior changes.
+• v1.15: Big screen raid/medal shelf mirrors real small-screen stats (single ledger). Boss HP derives from live stats. Worker backs two capped daily rewards: +5 XP for first 3 correct syntax drills (no streak impact) and the daily strike claim. Suite: 72 checks.
+• v1.14: Big screen gets "Night Zen" workspace (themes, ambient sounds); opens as a plain tab by default.
+• v1.11: Streak reliability fixes. Freezes now actually save streaks instead of consuming and resetting. One missed day burns exactly one freeze. Backward clock jumps re-anchor instead of resetting. Guarded by dependency-free, Chromium-only suite: 70 checks.
+• v1.10: XP scaling cap. 2 XP/min up to stretch threshold, then 1 XP/min (worker-enforced). Settings adds Export/Import JSON and two-step Reset. Popup matches Focus Tracker (Dojo green, 4 tabs: Today/Progress/Notes/More, second-lap goal ring, quiz door on Today).
+• v1.9: Unified AI script (ai.js) forces English output via expectedInputs/expectedOutputs. Stricter grading: Grader references lesson code/headings; answers need strict shape (verdicts only, 1-sentence quote) with one retry. Notes capped by text length.
+• v1.8: Notes act as mini-learning exercises. Gemini Nano runs 4 yes/no checks (+5 XP each, max 20). Provides 1 comment and a rewrite comparison; allows one rewrite to earn the difference. Near-duplicates pay nothing; 2-note daily cap. No model fallback: 5 XP base.
+• v1.7: Strict quiz rules. Blank/short answers auto-fail. Scale: Correct 25 XP / Partial 10 XP / Wrong 0 XP (max 3 paying daily). Flawed answers queue for tomorrow. Focus session matches note value (20 XP). Adds stretch ring, end-of-round quiz prompts, and smart reminders.
+• v1.6: Quizzes decouple from strict assumptions; adds editable "Quiz me on" field for custom topics (VS Code, articles) or blank starts.
+• v1.5: On-device Odin Project quizzes via Chrome Gemini Nano. Generates 3 local questions using page text, code blocks, and recent notes.
+• v1.4: Focus page upgrades: countdown ring, 5-minute break timer, hotkeys (Space/R/1-3), favicon countdown, and screen wake lock. Adds level-up confetti and toast alerts.
+• v1.3–v1.2: Focus sessions must be continuous (20+ min gap voids). Adds "Coding elsewhere" mode for VS Code tracking. Generic quizzes removed in v1.2, replaced by contextual v1.5 quizzes.
 
-> **v1.17**: **one focus surface** — the small focus-timer page is gone and
-> the **big screen's focus room runs the session itself**: the popup's
-> **Start focus session** opens it directly at `#focus`, where starting,
-> pausing, resetting, the lengths and the live tab title all live now. A
-> round survives a reload (a 20+ minute gap voids it; a closed tab comes
-> back paused), and each finished round is still paid by the worker. The
-> suite is now **73 checks** (`bash tests/run.sh`).
-> **v1.16**: the popup is re-dressed in **Dark Zen** — a deep slate
-> canvas, translucent cards with hairline borders, **bundled Inter**
-> offline, a forest-green hero button and muted-gold quest rewards. No
-> markup or behavior changes: same widget, reload to see it.
-> **v1.15**: the big screen's raid and medal shelf now **mirror real
-> small-screen stats** (one ledger, not two) — boss HP is derived from your
-> real minutes, sessions, quizzes, reviews, strikes and drills, and medals
-> celebrate live. The worker backs two capped rewards: **+5 XP for each of
-> the first three correct syntax drills a day** (drills are never streak
-> activity) and the **daily strike** claim, recorded once the day's goal is
-> finished. The suite is now **72 checks** (`bash tests/run.sh`).
-> **v1.14**: the big screen gets its "Night Zen" workspace build —
-> day/night themes, ambient focus sounds — and opens as a **plain tab** by
-> default (old installs are moved once from the fullscreen default).
-> **v1.11**: **the streak keeps its promises** — a **freeze now actually
-> saves the streak** (it used to be consumed and the streak reset anyway
-> two seconds later), one missed day burns **exactly one** freeze however
-> many times the worker wakes on rollover, and a **clock that jumps
-> backwards** (timezone travel, DST) re-anchors the day instead of
-> resetting the streak. The on-device files (`ai.js`, `notes.js`,
-> `grade.js` and the quiz page) are complete and the whole extension is
-> now guarded by a dependency-free test suite: **`bash tests/run.sh`**,
-> 70 checks, Chromium only.
-> **v1.10**: **minutes stop paying full price forever** — the rate is 2 XP per
-> minute up to your stretch threshold, then 1, and the **worker** applies that
-> rate itself (no page can farm full-price minutes; a finished focus session is
-> rated by where it started, since its minutes were heartbeated in at zero XP).
-> **Backups**: Settings gains **Export/Import JSON** and a **two-step Reset**
-> (no native dialogs). **The popup now matches Focus Tracker** — the same design
-> tokens (only the accent is Dojo green), four tabs (**Today / Progress / Notes
-> / More**), one ring that keeps filling as a **second lap** past the goal, and
-> the quiz door moved to Today. Notes, quizzes and quests are unchanged.
-> **v1.9**: **one voice for the model** — a shared `ai.js` declares **English
-> output** (`expectedInputs`/`expectedOutputs`) on every on-device session, so
-> Chrome stops guessing which language to answer in (and warning about it);
-> session creation, JSON extraction and asks live in that one file. **Stricter
-> grading**: the grader now sees the lesson's own **code and section headings**
-> as reference, replies must pass a shape check (one result per question,
-> verdicts only correct/partial/wrong, one sentence that **quotes something you
-> wrote**) with **one retry** — a garbled round pays nothing instead of
-> guessing "partial". **Notes stay honest**: short texts cap their own checks
-> (a 2-word fragment can count at most one, however friendly the model feels),
-> and the week total and the goal ring round the same way.
-> **v1.8**: a note is a **mini learning exercise** now. The on-device model
-> reads it and answers four yes/no checks — does it **name a concept**, is it
-> **your own words**, does it **include an example**, does it say **what you're
-> unsure about** — and **plain code does the math**: +5 XP per check passed,
-> max 20, still below a 15-minute session. You get one specific comment and a
-> **suggested rewrite to compare** (your text is never replaced), and you can
-> **rewrite your note once to earn the difference**. Junk stops paying:
-> near-duplicates of an earlier note pay nothing, and the 2-paying-notes cap
-> stands. No on-device model? A conservative 5 XP base, same cap.
-> **v1.7**: the quiz is **strict now** — blank, one-word and question-restating
-> answers are wrong by rule, before the model is even asked, and the grader is
-> told to judge what an answer *proves*: **correct pays 25 XP, partial 10,
-> wrong nothing** (up to 3 paying answers a day). **Wrong and partial answers
-> come back** — they are queued and lead tomorrow's quiz until they are fixed.
-> XP rebalanced: a focus session out-earns a typed note (**20 XP**, the same
-> number on the quest card). A **stretch ring** past the daily goal (so 58
-> minutes at a 15-minute goal teaches something), the **"what couldn't you do
-> today?"** line at the end of a focus round feeding tomorrow's quiz, and
-> **one reminder** — your learned usual time wins, the fixed hour is the
-> fallback.
-> **v1.6**: the quiz **never assumes what you are studying** — the quiz page has
-> an always-editable **"Quiz me on"** field (prefilled from the captured Odin
-> lesson, nothing more) plus an optional *"anything else in play"* line for
-> **VS Code practice, an article you were assigned**, anything. You can also
-> open the quiz from the popup with no lesson captured at all and just type the
-> topic. The captured lesson is only a guess; what you confirm is what gets
-> quizzed, and grading follows it.
-> **v1.5**: **on-device lesson quizzes** — on any Odin Project lesson, the page
-> shows a small **🧠 Quiz me on this lesson** button. It opens a quiz page that
-> writes three questions **from that exact lesson** (title, sections, a code
-> block from the page) plus your recent learning notes, using **Chrome's built-in
-> model (Gemini Nano)** — generated and graded locally, nothing leaves your
-> machine. (XP rules superseded by the v1.7 verdict scale above.) No model? The
-> page explains and everything else works as usual.
-> **v1.4**: the focus page got a real one — **countdown ring**, a **5-minute
-> break timer** after each round, **keyboard shortcuts** (Space / R / 1–3), a
-> **favicon + tab countdown** and a **screen wake lock** while a session runs.
-> Level-ups now celebrate themselves (confetti + overlay on the focus page,
-> toasts on the Odin Project), and quest/goal moments toast too.
-> **v1.3**: **Learning notes** — say what you actually learned (reviewed on-device since v1.8: 5 XP per check passed, max 20). Focus sessions must be
-> **continuous**: a break under 20 minutes keeps the session, 20+ minutes voids
-> it. **"Coding elsewhere" mode** counts VS Code and assignment pages honestly
-> (idle-checked). v1.2: generic quizzes gone — all XP still comes from **real
-> focused minutes**. v1.5 brings quizzes back the only way they make sense:
-> generated from the lesson you are actually on.
+
 
 ## What's inside
 
