@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Code Dojo</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <div class="title-row">
+        <img src="icons/icon48.png" alt="" width="22" height="22" />
+        <h1>Code Dojo</h1>
+        <span class="pill" id="leaguePill">Bronze</span>
+      </div>
+    </header>
+
+    <nav class="tabs" id="tabBar" role="tablist" aria-label="Sections">
+      <button role="tab" id="tab-today" data-tab="today" class="active" aria-selected="true" aria-controls="panel-today">Today</button>
+      <button role="tab" id="tab-progress" data-tab="progress" aria-selected="false" aria-controls="panel-progress" tabindex="-1">Progress</button>
+      <button role="tab" id="tab-notes" data-tab="notes" aria-selected="false" aria-controls="panel-notes" tabindex="-1">Notes<span class="tab-dot" id="notesDot" hidden></span></button>
+      <button role="tab" id="tab-more" data-tab="more" aria-selected="false" aria-controls="panel-more" tabindex="-1">More</button>
+    </nav>
+
+    <!-- TODAY: the ring, one bold summary line, one filled button; tiles, quests, quiz -->
+    <div class="tab-panel" id="panel-today" role="tabpanel" aria-labelledby="tab-today">
+      <section class="card goal">
+        <div class="ring-wrap">
+          <svg viewBox="0 0 120 120" class="ring" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" class="ring-bg"></circle>
+            <circle cx="60" cy="60" r="52" class="ring-fg" id="ringFg"></circle>
+            <circle cx="60" cy="60" r="52" class="ring-lap2" id="ringStretch"></circle>
+          </svg>
+          <div class="ring-label">
+            <b id="ringVal">0</b>
+            <span id="ringUnit">min today</span>
+          </div>
+        </div>
+        <p class="goal-summary" id="goalNote">–</p>
+        <button class="primary" id="startBtn">Start focus session</button>
+      </section>
+
+      <div class="summary">
+        <div class="sum-item"><span class="sum-value" id="streakVal">0</span><span class="sum-label"><svg class="ico ico-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"/></svg>streak</span></div>
+        <div class="sum-item"><span class="sum-value" id="xpVal">0</span><span class="sum-label"><svg class="ico ico-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/></svg>XP</span></div>
+        <div class="sum-item"><span class="sum-value" id="levelVal">1</span><span class="sum-label">level</span></div>
+      </div>
+      <div class="level-bar"><div id="levelFill"></div></div>
+      <div class="level-note" id="levelNote">–</div>
+
+      <section class="card">
+        <h2>Daily quests</h2>
+        <ul class="quests" id="questList"></ul>
+      </section>
+
+      <button class="quiz-open" id="quizBtn" title="On-device quiz — type the topic or use the captured lesson">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 18V5"/><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"/><path d="M18 18a4 4 0 0 0 2-7.464"/><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"/><path d="M6 18a4 4 0 0 1-2-7.464"/><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77"/></svg>
+        Quiz me (on-device)
+      </button>
+    </div>
+
+    <!-- PROGRESS: league + this week (the single-card merge is the next step) -->
+    <div class="tab-panel" id="panel-progress" role="tabpanel" aria-labelledby="tab-progress" hidden>
+      <section class="card">
+        <h2>League</h2>
+        <p class="league-note" id="leagueNote">–</p>
+        <div class="mini-bars" id="leagueBars"></div>
+      </section>
+
+      <section class="card">
+        <h2>This week</h2>
+        <div class="week" id="weekBars"></div>
+        <p class="week-note" id="weekNote">–</p>
+      </section>
+    </div>
+
+    <!-- NOTES: its own tab because the review panel is the tallest thing here -->
+    <div class="tab-panel" id="panel-notes" role="tabpanel" aria-labelledby="tab-notes" hidden>
+      <section class="card">
+        <h2>Learning log</h2>
+        <p class="sub-note" id="noteHint">–</p>
+        <div class="note-compose">
+          <textarea id="noteInput" maxlength="300" rows="3" placeholder="e.g. figured out closures — the inner function keeps its outer scope; still shaky on bind()"></textarea>
+          <p class="cap-preview" id="capPreview" hidden></p>
+          <button class="primary" id="noteBtn" title="Ctrl+Enter also logs it">Log it — reviewed on-device</button>
+        </div>
+        <div class="note-review" id="noteReview" hidden></div>
+        <ul class="notes" id="noteList"></ul>
+      </section>
+    </div>
+
+    <!-- MORE: coding habit, settings (incl. export/import + reset), the quote -->
+    <div class="tab-panel" id="panel-more" role="tabpanel" aria-labelledby="tab-more" hidden>
+      <section class="card">
+        <h2>Coding habit</h2>
+        <p class="habit" id="habitNote">–</p>
+        <p class="sub-note" id="odinToday">–</p>
+        <label class="row">
+          <span>Nudge at my usual time</span>
+          <input type="checkbox" id="nudgeToggle" />
+        </label>
+        <label class="row">
+          <span>Coding elsewhere (VS Code, assignments)</span>
+          <input type="checkbox" id="awayToggle" />
+        </label>
+        <p class="sub-note" id="awayNote">–</p>
+      </section>
+
+      <section class="card settings">
+        <h2>Settings</h2>
+        <label class="row">
+          <span>Daily goal</span>
+          <select id="goalSelect">
+            <option value="10">10 minutes</option>
+            <option value="15">15 minutes</option>
+            <option value="25">25 minutes</option>
+            <option value="45">45 minutes</option>
+          </select>
+        </label>
+        <label class="row">
+          <span>Reminder at</span>
+          <select id="hourSelect">
+            <option value="17">17:00</option>
+            <option value="18">18:00</option>
+            <option value="19">19:00</option>
+            <option value="20">20:00</option>
+            <option value="21">21:00</option>
+            <option value="22">22:00</option>
+          </select>
+        </label>
+        <p class="sub-note" id="reminderNote">–</p>
+        <label class="row">
+          <span>Sounds</span>
+          <input type="checkbox" id="soundToggle" />
+        </label>
+        <label class="row">
+          <span>Big screen on focus start</span>
+          <select id="bigScreenSelect">
+            <option value="tab">New tab</option>
+            <option value="fullscreen">Fullscreen window</option>
+          </select>
+        </label>
+
+        <div class="backup-row">
+          <button id="exportBtn">Export backup</button>
+          <button id="importBtn">Import…</button>
+          <input type="file" id="importInput" accept=".json,application/json" hidden />
+        </div>
+        <div class="confirm-row" id="importConfirm" hidden>
+          <span id="importLabel">Replace all progress with this backup?</span>
+          <span class="confirm-actions">
+            <button class="danger" id="importGo">Replace</button>
+            <button class="ghost" id="importCancel">Cancel</button>
+          </span>
+        </div>
+        <p class="sub-note" id="backupNote">Export keeps a JSON copy of your progress — import restores it. Everything stays on this device.</p>
+        <button class="danger" id="resetBtn">Reset all progress</button>
+      </section>
+
+      <section class="card quote" id="quoteCard">–</section>
+    </div>
+
+    <script src="ai.js"></script>
+    <script src="notes.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

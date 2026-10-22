@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');
+@import "tailwindcss";
+@theme {
+  --font-display: "Space Grotesk", "Inter", sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --color-dojo: #58cc02;
+  --color-dojo-dark: #46a302;
+  --color-dojo-deep: #2f7300;
+  --color-ink: #0b0e11;
+  --color-panel: #12171d;
+  --color-panel2: #171e26;
+  --color-line: #232d38;
+  --color-sky2: #3aa0ff;
+  --color-amber2: #ffb020;
+  --color-flame: #ff6b35;
+  --color-ice: #6fd3e7;
+  --color-rose2: #ff5d73;
+}
+html { scroll-behavior: smooth; }
+body { background: #0b0e11; color: #e8eaef; font-family: Inter, system-ui, sans-serif; }
+::selection { background: #58cc02; color: #071400; }
+/* duolingo-style chunky button */
+.btn-chunk { box-shadow: 0 4px 0 #46a302; transition: transform .08s, box-shadow .08s, filter .15s; }
+.btn-chunk:hover { filter: brightness(1.06); }
+.btn-chunk:active { transform: translateY(3px); box-shadow: 0 1px 0 #46a302; }
+.btn-chunk-blue { box-shadow: 0 4px 0 #2470b8; }
+.btn-chunk-blue:active { box-shadow: 0 1px 0 #2470b8; transform: translateY(3px); }
+.btn-chunk-dark { box-shadow: 0 4px 0 #05070a; }
+.btn-chunk-dark:active { box-shadow: 0 1px 0 #05070a; transform: translateY(3px); }
+.ring-track { stroke: #232d38; }
+.ring-anim { transition: stroke-dashoffset .8s cubic-bezier(.22,1,.36,1); }
+@keyframes pop-in { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes flame-flicker { 0%,100% { transform: scale(1) rotate(-2deg); } 50% { transform: scale(1.12) rotate(2deg); } }
+@keyframes confetti-fall { 0% { transform: translateY(-10px) rotate(0deg); opacity: 1; } 100% { transform: translateY(340px) rotate(540deg); opacity: 0; } }
+@keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+@keyframes bar-grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes shimmer { from { background-position: -400px 0; } to { background-position: 400px 0; } }
+.anim-pop { animation: pop-in .45s cubic-bezier(.22,1,.36,1) both; }
+.anim-toast { animation: toast-in .3s ease both; }
+.flame-anim { animation: flame-flicker 1.6s ease-in-out infinite; transform-origin: 50% 90%; display: inline-block; }
+.confetti-piece { animation: confetti-fall 1.6s ease-in both; }
+.pulse-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
+.bar-grow { transform-origin: bottom; animation: bar-grow .7s cubic-bezier(.22,1,.36,1) both; }
+.dot-grid { background-image: radial-gradient(#1e2833 1px, transparent 1px); background-size: 22px 22px; }
+.scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+.scroll-thin::-webkit-scrollbar-thumb { background: #2a3644; border-radius: 99px; }
+.scroll-thin::-webkit-scrollbar-track { background: transparent; }
+textarea:focus, input:focus, button:focus-visible { outline: 2px solid #58cc02; outline-offset: 2px; }
+textarea:focus, input:focus { outline: none; border-color: #58cc02 !important; }

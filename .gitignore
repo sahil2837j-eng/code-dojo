@@ -1,0 +1,9 @@
+node_modules/
+dist/
+web/node_modules/
+web/dist/
+.impeccable/
+.env
+.env.*
+*.log
+.DS_Store

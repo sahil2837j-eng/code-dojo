@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Code Dojo tests</title>
+    <style>
+      body { background: #0f1117; color: #e7e9ee; font: 13px/1.5 ui-monospace, monospace; }
+      pre { white-space: pre-wrap; padding: 16px; }
+    </style>
+  </head>
+  <body>
+    <pre id="results">running…</pre>
+
+    <!-- harness first, then the mock chrome the worker expects -->
+    <script src="support.js"></script>
+    <script src="mock-chrome.js"></script>
+    <script>
+      /* the worker checks this before booting: tests get the internals,
+         the extension gets its normal startup */
+      globalThis.chrome = MockChrome.chrome;
+      globalThis.__DOJO_TEST__ = true;
+    </script>
+
+    <!-- the code under test (pure modules + the worker) -->
+    <script src="../ai.js"></script>
+    <script src="../notes.js"></script>
+    <script src="../grade.js"></script>
+    <script src="../dojo.js"></script>
+
+    <!-- the suites -->
+    <script src="parse.test.js"></script>
+    <script src="ai.test.js"></script>
+    <script src="notes.test.js"></script>
+    <script src="grade.test.js"></script>
+    <script src="cross.test.js"></script>
+    <script src="worker.test.js"></script>
+    <script src="quizpage.test.js"></script>
+    <script src="screenpage.test.js"></script>
+
+    <script>
+      DojoSuite.runAll().then((r) => {
+        document.getElementById('results').textContent = r.lines.join('\n');
+        document.title = r.failed === 0 ? 'ALL PASS' : `FAIL ${r.failed}`;
+      });
+    </script>
+  </body>
+</html>

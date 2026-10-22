@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Code Dojo — Quiz</title>
+    <link rel="stylesheet" href="quiz.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <div class="title-row">
+        <img src="icons/icon48.png" alt="" width="22" height="22" />
+        <h1>Code Dojo <span class="sub">Quiz</span></h1>
+        <span class="pill" id="quizCapPill">–</span>
+        <span class="pill" id="streakPill"><svg class="ico ico-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"/></svg><span id="streakNum">–</span></span>
+      </div>
+    </header>
+
+    <main>
+      <!-- model state: availability, download progress, or the honest explanation -->
+      <section class="card" id="modelCard" hidden>
+        <h2>On-device model</h2>
+        <p class="note" id="modelNote">–</p>
+        <div class="progress" id="modelProgress" hidden><div id="modelFill"></div></div>
+        <button class="ghost" id="modelRetryBtn" hidden>Get the model ready</button>
+      </section>
+
+      <!-- setup: always-editable topic, prefilled from the captured lesson -->
+      <section class="card" id="setupCard">
+        <h2>Quiz me on</h2>
+        <p class="note" id="topicNote">–</p>
+        <label class="field">
+          <span>Topic</span>
+          <input id="topicInput" type="text" maxlength="160" placeholder="e.g. JavaScript closures — or the lesson you are on" />
+        </label>
+        <label class="field">
+          <span>Anything else in play? <em>optional</em></span>
+          <input id="extraInput" type="text" maxlength="160" placeholder="VS Code practice, an assigned article…" />
+        </label>
+        <p class="note" id="queueNote">–</p>
+        <button class="primary" id="startBtn" disabled>Write my questions</button>
+      </section>
+
+      <!-- the round -->
+      <section class="card" id="questionCard" hidden>
+        <div class="q-meta">
+          <span class="q-badge" id="qBadge">Question 1 of 3</span>
+          <span class="pill retry" id="retryPill" hidden><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>from an earlier round</span>
+        </div>
+        <h2 class="q-text" id="questionText">…</h2>
+        <p class="note hint" id="hintLine" hidden></p>
+        <button class="ghost" id="hintBtn" hidden><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>show hint</button>
+
+        <textarea id="answerInput" rows="5" placeholder="Answer in your own words — the mechanism first, then an example."></textarea>
+        <div class="row">
+          <span class="note" id="answerCount">0 characters (min 3 words)</span>
+          <button class="primary slim" id="submitBtn">Submit — graded on-device</button>
+        </div>
+        <p class="note kbd">Ctrl/Cmd+Enter also submits.</p>
+
+        <p class="grading" id="grading" hidden><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 18V5"/><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4"/><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77"/><path d="M18 18a4 4 0 0 0 2-7.464"/><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"/><path d="M6 18a4 4 0 0 1-2-7.464"/><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77"/></svg>Grading on-device…</p>
+
+        <div class="result" id="result" hidden>
+          <div class="result-head">
+            <span class="badge" id="verdictBadge">—</span>
+            <span class="xp" id="xpBadge">0 XP</span>
+          </div>
+          <p class="feedback" id="resultFeedback">—</p>
+          <p class="gap" id="resultGap" hidden></p>
+          <button class="primary slim" id="nextBtn">Next question →</button>
+        </div>
+      </section>
+
+      <!-- summary -->
+      <section class="card summary" id="summaryCard" hidden>
+        <div class="trophy" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14.66V17a1 1 0 0 1-1 1 2 2 0 0 0-2 2v2"/><path d="M14 14.66V17a1 1 0 0 0 1 1 2 2 0 0 1 2 2v2"/><path d="M17.916 10H19.5A2.5 2.5 0 0 0 22 7.5V5a1 1 0 0 0-1-1h-3"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6.084 10H4.5A2.5 2.5 0 0 1 2 7.5V5a1 1 0 0 1 1-1h3"/></svg></div>
+        <h2>Quiz complete</h2>
+        <div class="stats">
+          <div><b id="sumXp">+0</b><span>XP banked</span></div>
+          <div><b id="sumAcc">0%</b><span>first-try accuracy</span></div>
+          <div><b id="sumQueue">0</b><span>queued for tomorrow</span></div>
+        </div>
+        <p class="note" id="sumNote">–</p>
+        <button class="primary" id="doneBtn">Return to Dojo</button>
+      </section>
+    </main>
+
+    <footer>
+      Correct 25 XP · partial 10 · wrong 0 · up to 3 paid answers a day · generated and graded entirely on-device
+    </footer>
+
+    <script src="ai.js"></script>
+    <script src="grade.js"></script>
+    <script src="quiz.js"></script>
+  </body>
+</html>

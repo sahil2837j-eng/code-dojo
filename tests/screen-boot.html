@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <base href="../screen/" />
+    <title>booting…</title>
+    <script>
+      /* e2e boot page for screenpage.test.js. It serves the BUILT big screen
+         at a real URL (tests/screen-boot.html#focus) so the app sees #focus
+         exactly the way the extension tab does - while the shared mock
+         chrome from the parent test page (tests/run.html) stands in for the
+         extension APIs. Kept out of the shipped files on purpose: only the
+         suites load it. */
+      window.__errors = [];
+      window.onerror = function (message) {
+        window.__errors.push(String(message));
+      };
+      window.addEventListener("unhandledrejection", function (event) {
+        window.__errors.push(
+          "rejection: " + ((event.reason && event.reason.message) || event.reason),
+        );
+      });
+      var parentChrome =
+        window.parent && window.parent.MockChrome && window.parent.MockChrome.chrome;
+      if (parentChrome) {
+        try {
+          window.chrome = parentChrome;
+        } catch (e) {
+          /* fall through to defineProperty */
+        }
+        if (!window.chrome || !window.chrome.runtime || !window.chrome.runtime.sendMessage) {
+          try {
+            Object.defineProperty(window, "chrome", {
+              value: parentChrome,
+              configurable: true,
+              writable: true,
+            });
+          } catch (e) {
+            /* the smoke check below reports it */
+          }
+        }
+      }
+      if (!window.chrome || !window.chrome.runtime || !window.chrome.runtime.sendMessage) {
+        window.__errors.push("chrome stub failed");
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      /* boot the built bundle the same way screen/index.html does - the
+         asset hash changes every build, so read it from index.html */
+      (async function () {
+        var res = await fetch("index.html");
+        var html = await res.text();
+        var css = html.match(/href="([^"]+\.css)"/);
+        if (css) {
+          var link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = css[1];
+          document.head.appendChild(link);
+        }
+        var js = html.match(/src="([^"]+\.js)"/);
+        if (!js) throw new Error("no module script in screen/index.html");
+        await import(js[1]);
+      })().catch(function (e) {
+        window.__errors.push("boot: " + ((e && e.message) || e));
+      });
+    </script>
+  </body>
+</html>
