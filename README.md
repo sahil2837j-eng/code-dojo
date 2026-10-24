@@ -6,7 +6,6 @@ usually code** from your real practice on the Odin Project.
 
 The rule it enforces: a little practice every day beats a lot sometimes.
 
-
 ## Demo
 
 <img src="assets/showcase.gif" alt="Code Dojo showcase — Today, Focus room and Learning notes" width="100%">
