@@ -5,6 +5,18 @@ streaks, XP, levels, leagues, daily quests, reminders — and it learns **when y
 usually code** from your real practice on the Odin Project.
 
 The rule it enforces: a little practice every day beats a lot sometimes.
+
+
+## Demo
+
+<img src="assets/showcase.gif" alt="Code Dojo showcase — Today, Focus room and Learning notes" width="100%">
+
+*The 12-second tour: the real big screen in light and dark, the focus room, and learning notes.*
+
+<img src="assets/proof.gif" alt="Code Dojo proof — worker-paid focus sessions and on-device note review" width="100%">
+
+*The proof: the popup and the big screen together — worker-paid focus sessions and on-device note review.*
+
 • v1.17: One focus surface. Small timer page removed; #focus on the big screen runs the session (start, pause, reset, live tab title). 20+ min gap voids a round; closed tabs return paused. Workers pay completed rounds. Suite: 73 checks (bash tests/run.sh).
 • v1.16: Popup redesigned in Dark Zen (slate canvas, translucent cards, hairline borders, bundled Inter, green hero button, gold rewards). No markup/behavior changes.
 • v1.15: Big screen raid/medal shelf mirrors real small-screen stats (single ledger). Boss HP derives from live stats. Worker backs two capped daily rewards: +5 XP for first 3 correct syntax drills (no streak impact) and the daily strike claim. Suite: 72 checks.

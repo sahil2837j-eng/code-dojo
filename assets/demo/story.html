@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Code Dojo — demo stage</title>
+<style>
+  :root {
+    --accent: #86efac;
+    --ink: #f2f8f3;
+    --muted: #9db5a5;
+    --line: rgba(255,255,255,.1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1280px; height: 800px; overflow: hidden; }
+  body {
+    background: #06100c;
+    color: var(--ink);
+    font-family: Cantarell, Inter, "Noto Sans", "DejaVu Sans", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .stage { position: relative; width: 1280px; height: 800px; overflow: hidden; background: #06100c; }
+  .glow {
+    position: absolute; width: 950px; height: 950px; right: -330px; top: -330px;
+    border-radius: 50%; filter: blur(30px); pointer-events: none;
+    background: radial-gradient(circle, rgba(134,239,172,.16), transparent 64%);
+  }
+  .glow.two {
+    width: 700px; height: 700px; left: -330px; right: auto; top: auto; bottom: -430px;
+    background: radial-gradient(circle, rgba(240,198,116,.1), transparent 65%);
+  }
+  .grain {
+    position: absolute; inset: 0; opacity: .022; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ------------------------------ showcase ------------------------------ */
+  .showcase { position: absolute; inset: 0; overflow: hidden; }
+  .hero { position: absolute; inset: 0; overflow: hidden; background: #08130e; }
+  .hero img {
+    position: absolute; top: -2px; left: -2px;
+    width: 1284px; height: 804px;
+    object-fit: cover; opacity: 0;
+    will-change: opacity, transform;
+  }
+  .scrim {
+    position: absolute; left: 0; bottom: 0; width: 1000px; height: 380px;
+    pointer-events: none; z-index: 3;
+    background: linear-gradient(90deg, #06100c 0%, #06100c 56%, rgba(6,16,12,.94) 72%, rgba(6,16,12,.55) 87%, transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.55) 10%, #000 21%, #000 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.55) 10%, #000 21%, #000 100%);
+  }
+  .showcase-copy {
+    position: absolute; left: 64px; bottom: 86px; width: 860px; height: 244px;
+    z-index: 4;
+  }
+  .scene-copy { position: absolute; left: 0; bottom: 0; width: 860px; opacity: 0; will-change: opacity, transform; }
+  .eyebrow {
+    color: var(--accent);
+    font: 700 11.5px/1.2 "DejaVu Sans Mono", ui-monospace, monospace;
+    letter-spacing: 3px; text-transform: uppercase;
+  }
+  .showcase h1 {
+    margin: 14px 0 14px;
+    font-size: 46px; line-height: 1.02; letter-spacing: -2px; font-weight: 800;
+    color: #f8fdf9; text-shadow: 0 4px 30px rgba(0,0,0,.45);
+  }
+  .lede {
+    max-width: 735px; margin: 0;
+    color: #c8d9cc; font-size: 16.5px; line-height: 1.52; letter-spacing: -.1px;
+    text-shadow: 0 2px 18px rgba(0,0,0,.5);
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 6px 10px;
+    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 999px;
+    background: rgba(7,18,13,.64);
+    color: #d8e8dd; font-size: 11.5px; line-height: 1;
+    backdrop-filter: blur(4px);
+  }
+  .chip::before {
+    content: ""; width: 4px; height: 4px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 9px var(--accent);
+  }
+  .showcase .foot {
+    position: absolute; left: 64px; right: 56px; bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+    color: #90aa99; font: 600 10px/1 "DejaVu Sans Mono", ui-monospace, monospace;
+    letter-spacing: 1.2px; z-index: 5;
+  }
+  .showcase .foot .right {
+    margin-left: 18px; color: #7f9a89; letter-spacing: .8px;
+  }
+  .segments { display: flex; gap: 5px; }
+  .seg { width: 42px; height: 2px; border-radius: 99px; background: rgba(255,255,255,.13); overflow: hidden; }
+  .seg i { display: block; width: 0; height: 100%; background: var(--accent); }
+
+  /* ------------------------------- proof -------------------------------- */
+  .proof { display: none; position: absolute; inset: 0; background: #06100c; overflow: hidden; }
+  body.is-proof .showcase { display: none; }
+  body.is-proof .proof { display: block; }
+  .proof::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 80% 80% at 55% 45%, #000 20%, transparent 95%);
+    opacity: .5;
+  }
+  .proof header {
+    position: absolute; top: 24px; left: 52px; right: 56px;
+    display: flex; align-items: center; gap: 11px; z-index: 4;
+  }
+  .mark { width: 28px; height: 28px; border-radius: 8px; object-fit: cover; }
+  .brand { display: flex; align-items: baseline; gap: 8px; }
+  .brand b { font-size: 12.5px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+  .brand span {
+    font: 700 9px/1 "DejaVu Sans Mono", ui-monospace, monospace; letter-spacing: 1px;
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    padding: 3px 5px; border-radius: 4px;
+  }
+  .proof header .right {
+    margin-left: auto; color: #718b7b; font: 600 9.5px/1 "DejaVu Sans Mono", ui-monospace, monospace;
+    letter-spacing: 1.2px;
+  }
+  .window {
+    position: absolute; border-radius: 13px; overflow: hidden;
+    background: #0a1510; border: 1px solid rgba(255,255,255,.11);
+    box-shadow: 0 30px 80px rgba(0,0,0,.5);
+  }
+  .popup-card { left: 52px; top: 74px; width: 340px; }
+  .screen-card { left: 430px; top: 74px; width: 794px; }
+  .bar {
+    height: 30px; display: flex; align-items: center; gap: 6px; padding: 0 10px;
+    background: #101d16; border-bottom: 1px solid rgba(255,255,255,.07);
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #365243; }
+  .dot.r { background: #d47b70; opacity: .8; }
+  .dot.y { background: #d4b56e; opacity: .8; }
+  .dot.g { background: #6fbd8c; opacity: .8; }
+  .bar .title {
+    flex: 1; text-align: center; color: #89a393;
+    font: 600 8.5px/1 "DejaVu Sans Mono", ui-monospace, monospace;
+    letter-spacing: .35px;
+  }
+  .bar .mini {
+    color: #607a6a; font: 700 7.5px/1 "DejaVu Sans Mono", ui-monospace, monospace;
+    letter-spacing: .7px; border: 1px solid rgba(255,255,255,.09); border-radius: 3px; padding: 2px 3px;
+  }
+  .popup-stack, .screen-stack { position: relative; overflow: hidden; background: #08130e; }
+  .popup-stack { height: 580px; }
+  .popup-stack img { position: absolute; top: 0; left: 0; width: 340px; height: auto; opacity: 0; will-change: opacity; }
+  .screen-stack { height: 496px; }
+  .screen-stack img {
+    position: absolute; top: 0; left: 0; width: 794px; height: 496px;
+    object-fit: cover; opacity: 0; will-change: opacity, transform;
+  }
+  .badge {
+    position: absolute; right: 10px; bottom: 10px; z-index: 4;
+    padding: 5px 8px; border-radius: 5px;
+    border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent);
+    background: rgba(5,15,10,.78);
+    color: var(--accent);
+    font: 800 10px/1 "DejaVu Sans Mono", ui-monospace, monospace;
+    letter-spacing: .8px;
+    backdrop-filter: blur(4px);
+  }
+  .popup-tag {
+    position: absolute; left: 52px; top: 692px; color: #6d8777;
+    font: 700 8.5px/1 "DejaVu Sans Mono", ui-monospace, monospace; letter-spacing: 1.3px;
+  }
+  .proof-copy {
+    position: absolute; left: 430px; top: 610px; width: 780px; z-index: 4;
+  }
+  .proof-copy { height: 160px; }
+  .proof-copy .scene-copy { top: 0; bottom: auto; width: 780px; }
+  .proof h1 {
+    margin: 10px 0 9px;
+    font-size: 37px; line-height: 1.04; letter-spacing: -1.4px; font-weight: 800;
+    color: #f5fbf6;
+  }
+  .proof .lede { max-width: 770px; font-size: 15px; line-height: 1.45; color: #b7cbbb; }
+  .proof .chips { margin-top: 14px; }
+  .proof .chip { font-size: 10.5px; padding: 5px 8px; }
+  .proof .foot {
+    position: absolute; left: 52px; right: 56px; bottom: 23px;
+    display: flex; align-items: center; gap: 12px;
+    color: #76907f; font: 600 9.5px/1 "DejaVu Sans Mono", ui-monospace, monospace;
+    letter-spacing: 1.2px;
+  }
+  .proof .foot .right { margin-left: auto; color: #5f7969; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="glow" id="glow"></div>
+  <div class="glow two"></div>
+  <div class="grain"></div>
+
+  <section class="showcase" id="showcase">
+    <div class="hero" id="hero"></div>
+    <div class="scrim"></div>
+    <div class="showcase-copy" id="showcase-copy"></div>
+    <div class="foot">
+      <span id="show-count">01 / 03</span>
+      <div class="segments" id="show-segments"></div>
+      <span class="right">Real UI · local data · no network</span>
+    </div>
+  </section>
+
+  <section class="proof" id="proof">
+    <header>
+      <img class="mark" src="../../icons/icon48.png" alt="">
+      <div class="brand"><b>Code Dojo</b><span>v1.17</span></div>
+      <div class="right">Local-first · on-device</div>
+    </header>
+
+    <div class="window popup-card">
+      <div class="bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="title" id="popup-title">Code Dojo · Today</span>
+        <span class="mini">POPUP</span>
+      </div>
+      <div class="popup-stack" id="popup-stack"></div>
+    </div>
+    <div class="popup-tag">THE SMALL SCREEN · LIVE STATE</div>
+
+    <div class="window screen-card">
+      <div class="bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="title" id="screen-title">Big screen · Focus room</span>
+        <span class="mini">TAB</span>
+      </div>
+      <div class="screen-stack" id="screen-stack"></div>
+      <div class="badge" id="badge">2 XP / min</div>
+    </div>
+
+    <div class="proof-copy" id="proof-copy"></div>
+
+    <div class="foot">
+      <span id="proof-count">01 / 02</span>
+      <div class="segments" id="proof-segments"></div>
+      <span class="right">Real popup + real big screen</span>
+    </div>
+  </section>
+</div>
+
+<script>
+  const SHOWCASE = {
+    duration: 12,
+    scenes: [
+      {
+        img: 'today-light.png', accent: '#4ade80',
+        eyebrow: 'Code Dojo · 01 / Today',
+        title: 'A little practice.\nA lot of progress.',
+        body: 'A 12-day streak, 1,240 XP and three daily quests — earned from real, focused work.',
+        chips: ['12-day streak', '1,240 XP', '3 daily quests']
+      },
+      {
+        img: 'focus-dark.png', accent: '#86efac',
+        eyebrow: 'Code Dojo · 02 / Focus room',
+        title: 'One focus surface.',
+        body: 'The room runs the session: a 25-minute countdown, Space to pause, R to reset — and XP paid only when the round finishes.',
+        chips: ['25:00 countdown', 'Space / R / 1–3', 'Worker-paid XP']
+      },
+      {
+        img: 'notes-dark.png', accent: '#f0c674',
+        eyebrow: 'Code Dojo · 03 / Learning notes',
+        title: 'Make the learning stick.',
+        body: 'Write what you figured out. The on-device model reviews four checks and plain code pays the XP. Nothing leaves the machine.',
+        chips: ['On-device review', '+5 XP per check', '2 paying notes / day']
+      }
+    ]
+  };
+
+  const PROOF = {
+    duration: 10,
+    scenes: [
+      {
+        img: 'focus-dark.png', popup: 'popup-today.png', accent: '#86efac', badge: '2 XP / min',
+        popupTitle: 'Code Dojo · Today', screenTitle: 'Big screen · Focus room',
+        eyebrow: 'The focus loop',
+        title: 'Verified effort only.',
+        body: 'Focused minutes pay 2 XP. The worker pays; a page cannot award itself. A finished round is the receipt.',
+        chips: ['20+ min gap voids', 'Space to pause', 'Worker-paid XP']
+      },
+      {
+        img: 'notes-dark.png', popup: 'popup-notes.png', accent: '#f0c674', badge: '0 bytes',
+        popupTitle: 'Code Dojo · Notes', screenTitle: 'Big screen · Learning notes',
+        eyebrow: 'The notebook',
+        title: 'Review that stays on-device.',
+        body: 'Four checks: concept, own words, example, what is still fuzzy. The model writes one specific comment; plain code computes the XP.',
+        chips: ['+5 XP per check', '20 XP cap', 'No network']
+      }
+    ]
+  };
+
+  const params = new URLSearchParams(location.search);
+  const storyKey = params.get('story') || 'showcase';
+  const isProof = storyKey === 'proof';
+  const story = isProof ? PROOF : SHOWCASE;
+  const scenes = story.scenes;
+  const per = story.duration / scenes.length;
+
+  if (isProof) document.body.classList.add('is-proof');
+
+  const stage = document.getElementById('stage');
+  const glow = document.getElementById('glow');
+  const showCopy = document.getElementById('showcase-copy');
+  const hero = document.getElementById('hero');
+  const proofCopy = document.getElementById('proof-copy');
+  const popupStack = document.getElementById('popup-stack');
+  const screenStack = document.getElementById('screen-stack');
+  const showSegments = document.getElementById('show-segments');
+  const proofSegments = document.getElementById('proof-segments');
+  const popupTitle = document.getElementById('popup-title');
+  const screenTitle = document.getElementById('screen-title');
+  const badge = document.getElementById('badge');
+
+  function buildCopy(container, list) {
+    list.forEach((s, i) => {
+      const node = document.createElement('div');
+      node.className = 'scene-copy';
+      node.dataset.scene = String(i);
+      node.innerHTML = `
+        <div class="eyebrow">${s.eyebrow}</div>
+        <h1>${s.title.replace(/\n/g, '<br>')}</h1>
+        <p class="lede">${s.body}</p>
+        <div class="chips">${s.chips.map((c) => `<span class="chip">${c}</span>`).join('')}</div>`;
+      container.appendChild(node);
+    });
+  }
+
+  function buildImages(container, list, srcKey, className) {
+    list.forEach((s, i) => {
+      const img = document.createElement('img');
+      img.src = 'shots/' + s[srcKey];
+      img.alt = '';
+      img.draggable = false;
+      img.dataset.scene = String(i);
+      if (className) img.className = className;
+      container.appendChild(img);
+    });
+  }
+
+  buildCopy(showCopy, SHOWCASE.scenes);
+  buildCopy(proofCopy, PROOF.scenes);
+  buildImages(hero, SHOWCASE.scenes, 'img');
+  buildImages(popupStack, PROOF.scenes, 'popup');
+  buildImages(screenStack, PROOF.scenes, 'img');
+
+  function buildSegments(container, count) {
+    for (let i = 0; i < count; i++) {
+      const seg = document.createElement('span');
+      seg.className = 'seg';
+      seg.innerHTML = '<i></i>';
+      container.appendChild(seg);
+    }
+  }
+  buildSegments(showSegments, SHOWCASE.scenes.length);
+  buildSegments(proofSegments, PROOF.scenes.length);
+
+  function updateStack(stack, i, local, fade) {
+    const nodes = Array.from(stack.children);
+    nodes.forEach((node) => {
+      node.style.opacity = '0';
+      node.style.zIndex = '0';
+    });
+    let alpha = 1;
+    if (i === 0) {
+      alpha = 1;
+    } else if (local < fade) {
+      alpha = local / fade;
+    }
+    const current = nodes[i];
+    current.style.opacity = String(Math.max(0.001, alpha));
+    current.style.zIndex = '2';
+    if (i > 0 && alpha < 1) {
+      const prev = nodes[i - 1];
+      prev.style.opacity = String(1 - alpha);
+      prev.style.zIndex = '1';
+    }
+    return alpha;
+  }
+
+  function updateCopy(container, i, alpha) {
+    const nodes = Array.from(container.children);
+    nodes.forEach((node) => {
+      node.style.opacity = '0';
+      node.style.zIndex = '1';
+    });
+    const current = nodes[i];
+    current.style.opacity = String(alpha);
+    current.style.transform = `translateY(${(1 - alpha) * 8}px)`;
+    current.style.zIndex = '3';
+    if (i > 0 && alpha < 1) {
+      const prev = nodes[i - 1];
+      prev.style.opacity = String(1 - alpha);
+      prev.style.transform = 'translateY(0)';
+      prev.style.zIndex = '2';
+    }
+  }
+
+  function setMeta(s, i) {
+    stage.style.setProperty('--accent', s.accent);
+    glow.style.background = `radial-gradient(circle, ${s.accent}30, transparent 64%)`;
+    if (isProof) {
+      popupTitle.textContent = s.popupTitle;
+      screenTitle.textContent = s.screenTitle;
+      badge.textContent = s.badge;
+    }
+    const count = document.getElementById(isProof ? 'proof-count' : 'show-count');
+    count.textContent = `${String(i + 1).padStart(2, '0')} / ${String(scenes.length).padStart(2, '0')}`;
+  }
+
+  window.renderAt = function (t) {
+    const time = Math.max(0, Math.min(story.duration - 0.0001, t));
+    const i = Math.min(scenes.length - 1, Math.floor(time / per));
+    const local = time - i * per;
+    const fade = 0.4;
+    const alpha = updateStack(isProof ? screenStack : hero, i, local, fade);
+
+    if (isProof) {
+      updateStack(popupStack, i, local, fade);
+      updateCopy(proofCopy, i, alpha);
+    } else {
+      updateCopy(showCopy, i, alpha);
+    }
+
+    if (alpha >= 0.5 || i === 0) setMeta(scenes[i], i);
+
+    const segs = (isProof ? proofSegments : showSegments).querySelectorAll('.seg i');
+    segs.forEach((seg, n) => { seg.style.width = n < i ? '100%' : '0'; });
+    segs[i].style.width = `${Math.min(100, (local / per) * 100)}%`;
+  };
+
+  window.__ready = Promise.all(
+    Array.from(document.images).map((img) => img.complete ? Promise.resolve() : new Promise((res) => {
+      img.addEventListener('load', res, { once: true });
+      img.addEventListener('error', res, { once: true });
+    }))
+  ).then(() => document.fonts.ready);
+
+  window.renderAt(0);
+</script>
+</body>
+</html>
